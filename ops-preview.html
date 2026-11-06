@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>OMK Outlet Ops</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: preview bar on top, then a phone-width app for staff and a wider board for the owner */
+:root {
+  --bg: #f4f3ef; --card: #ffffff; --ink: #1c1a15; --muted: #6a665c; --line: #e4e0d6; --chip: #eeebe3;
+  --yolk: #f0a500; --yolk-ink: #7a5000; --yolk-soft: #fff1cc;
+  --ok: #157f3b; --ok-soft: #e2f3e7; --bad: #c03a0c; --bad-soft: #fde6da; --warn: #a85a00; --warn-soft: #fdf0cf;
+  --dark: #1c1a15; --on-dark: #ffffff;
+  --fd: 'Bricolage Grotesque', 'Trebuchet MS', system-ui, sans-serif;
+  --fb: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #14130f; --card: #1e1c17; --ink: #f2efe7; --muted: #a29d90; --line: #33302a; --chip: #2a2822;
+  --yolk: #f5b623; --yolk-ink: #ffd56b; --yolk-soft: #3a2e10;
+  --ok: #4fd683; --ok-soft: #14301e; --bad: #ff8a57; --bad-soft: #3b1b0f; --warn: #f7bd4a; --warn-soft: #382a0c;
+  --dark: #f2efe7; --on-dark: #14130f; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #14130f; --card: #1e1c17; --ink: #f2efe7; --muted: #a29d90; --line: #33302a; --chip: #2a2822;
+  --yolk: #f5b623; --yolk-ink: #ffd56b; --yolk-soft: #3a2e10;
+  --ok: #4fd683; --ok-soft: #14301e; --bad: #ff8a57; --bad-soft: #3b1b0f; --warn: #f7bd4a; --warn-soft: #382a0c;
+  --dark: #f2efe7; --on-dark: #14130f; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--fb); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 40px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--yolk); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* preview bar */
+.pv { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 12px 10px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.pv-in { max-width: 980px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.brand { display: flex; align-items: center; gap: 9px; font-family: var(--fd); font-weight: 800; font-size: 18px; letter-spacing: -.01em; }
+.egg { width: 22px; height: 28px; border-radius: 50% 50% 48% 48% / 60% 60% 40% 40%; background: var(--card); border: 2px solid var(--ink); position: relative; flex: none; }
+.egg::after { content: ""; position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--yolk); left: 4px; top: 10px; }
+.tag { font-family: var(--fb); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--yolk-soft); color: var(--yolk-ink); border-radius: 999px; padding: 3px 8px; }
+.seg { display: flex; gap: 4px; background: var(--chip); padding: 4px; border-radius: 12px; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+.seg button { border: 0; background: transparent; padding: 7px 12px; border-radius: 9px; font-weight: 600; font-size: 13.5px; white-space: nowrap; color: var(--muted); }
+.seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.pv-l { font-size: 12px; color: var(--muted); font-weight: 600; }
+.pv-opts { display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto; font-size: 12.5px; color: var(--muted); }
+.pv-opts label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.note { max-width: 980px; margin: 0 auto 14px; font-size: 13px; color: var(--muted); }
+
+/* app */
+#app { margin: 0 auto; max-width: 460px; display: grid; gap: 14px; }
+#app.wide { max-width: 980px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; min-width: 0; }
+h1, h2, h3 { font-family: var(--fd); margin: 0; letter-spacing: -.015em; text-wrap: balance; }
+h1 { font-size: 24px; font-weight: 800; } h2 { font-size: 17px; font-weight: 700; } h3 { font-size: 15px; font-weight: 700; }
+.sub { color: var(--muted); font-size: 13.5px; }
+.row { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.grow { flex: 1; min-width: 0; }
+.av { width: 46px; height: 46px; border-radius: 14px; background: var(--yolk-soft); color: var(--yolk-ink); display: grid; place-items: center; font-weight: 800; flex: none; overflow: hidden; font-size: 15px; }
+.av img { width: 100%; height: 100%; object-fit: cover; }
+.av.sm { width: 34px; height: 34px; border-radius: 10px; font-size: 12px; }
+.btn { border: 0; border-radius: 14px; padding: 13px 16px; font-weight: 700; font-size: 15px; background: var(--dark); color: var(--on-dark); width: 100%; }
+.btn.yolk { background: var(--yolk); color: #1c1a15; }
+.btn.ghost { background: var(--chip); color: var(--ink); }
+.btn:disabled { opacity: .45; cursor: default; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--chip); color: var(--muted); white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); } .pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); } .pill.y { background: var(--yolk-soft); color: var(--yolk-ink); }
+.att-state { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: var(--chip); margin: 12px 0; }
+.att-state.ok { background: var(--ok-soft); } .att-state.bad { background: var(--bad-soft); }
+.att-state b { display: block; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex: none; }
+.dot.ok { background: var(--ok); } .dot.bad { background: var(--bad); }
+.list { display: grid; gap: 10px; }
+.cl { display: flex; gap: 12px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); text-align: left; width: 100%; }
+.cl:disabled { opacity: .55; cursor: default; }
+.ring { width: 44px; height: 44px; flex: none; }
+.ring circle { fill: none; stroke-width: 5; }
+.ring .bg { stroke: var(--chip); } .ring .fg { stroke: var(--yolk); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+.ring .fg.ok { stroke: var(--ok); }
+.ring text { font-size: 11px; font-weight: 700; fill: var(--ink); text-anchor: middle; dominant-baseline: central; font-family: var(--fb); }
+.chev { color: var(--muted); font-size: 20px; }
+
+/* checklist screen */
+.back { border: 0; background: none; padding: 4px 0; font-weight: 700; color: var(--muted); font-size: 14px; }
+.item { border-top: 1px solid var(--line); padding: 14px 0; display: grid; gap: 10px; }
+.item:first-of-type { border-top: 0; }
+.item-h { display: flex; gap: 10px; align-items: flex-start; }
+.item-h b { flex: 1; font-weight: 600; }
+.k { font-size: 11.5px; color: var(--muted); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.yn { display: flex; gap: 8px; }
+.yn button { flex: 1; border: 1.5px solid var(--line); background: var(--card); border-radius: 12px; padding: 10px; font-weight: 700; }
+.yn button.on.y { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); }
+.yn button.on.n { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.shot { aspect-ratio: 4 / 3; max-width: 100%; border: 1.5px dashed var(--line); border-radius: 14px; background: var(--bg); display: grid; place-items: center; text-align: center; font-weight: 700; font-size: 13px; color: var(--muted); position: relative; overflow: hidden; padding: 0; }
+.shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.shot .lbl { position: absolute; left: 6px; bottom: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; padding: 2px 7px; border-radius: 6px; font-weight: 700; }
+.shot:disabled { opacity: .5; cursor: default; }
+.shot.single { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+.numin { display: flex; gap: 8px; align-items: center; }
+.numin input { width: 120px; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; font-size: 16px; background: var(--card); color: var(--ink); }
+.txt { width: 100%; border: 1.5px solid var(--line); border-radius: 12px; padding: 9px 12px; font: inherit; background: var(--card); color: var(--ink); }
+.foot { position: sticky; bottom: 0; padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(transparent, var(--bg) 30%); }
+
+/* owner */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.ol h2 { display: flex; align-items: center; gap: 8px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.stat { background: var(--bg); border-radius: 12px; padding: 10px; min-width: 0; }
+.stat b { display: block; font-family: var(--fd); font-size: 24px; font-weight: 800; line-height: 1.1; }
+.stat span { font-size: 12px; color: var(--muted); font-weight: 600; }
+.stat.bad b { color: var(--bad); } .stat.ok b { color: var(--ok); }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; font-weight: 700; font-size: 13.5px; }
+.tabs button.on { background: var(--dark); color: var(--on-dark); border-color: var(--dark); }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+th { text-align: left; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+.issue { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--line); }
+.issue:first-child { border-top: 0; }
+.stripe { width: 4px; align-self: stretch; border-radius: 4px; background: var(--bad); flex: none; }
+.stripe.ok { background: var(--ok); }
+.thumbs { display: flex; gap: 6px; margin-top: 8px; }
+.thumbs img { width: 64px; height: 48px; object-fit: cover; border-radius: 8px; }
+.feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.pair figure { margin: 0; position: relative; }
+.pair img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; display: block; }
+.pair figcaption { position: absolute; left: 6px; bottom: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; padding: 1px 6px; border-radius: 6px; font-weight: 700; }
+.linkbtn { border: 0; background: none; color: var(--yolk-ink); font-weight: 700; padding: 0; font-size: 13px; }
+
+.modal { position: fixed; inset: 0; background: rgba(10,10,8,.55); display: grid; place-items: center; z-index: 20; padding: 16px; }
+.modal .card { width: min(520px, 100%); max-height: calc(100% - 32px); overflow: auto; }
+/* sign-in at the outlet */
+.login h1 { font-size: 26px; }
+.field { display: grid; gap: 6px; margin-top: 12px; }
+.field label { font-size: 13px; font-weight: 700; }
+.field input { border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; font: inherit; font-size: 16px; background: var(--card); color: var(--ink); letter-spacing: .02em; }
+.geo { width: 100%; max-width: 100%; height: auto; display: block; border-radius: 14px; background: var(--bg); margin-top: 12px; }
+.geo .street { stroke: var(--line); stroke-width: 7; fill: none; }
+.geo .zone { fill: var(--yolk-soft); stroke: var(--yolk); stroke-width: 2; stroke-dasharray: 6 5; }
+.geo .zone.ok { fill: var(--ok-soft); stroke: var(--ok); }
+.geo .pin { fill: var(--ink); } .geo .pin-in { fill: var(--yolk); }
+.geo .me { fill: #2563eb; stroke: var(--card); stroke-width: 3; }
+.geo .me.far { fill: var(--bad); }
+.geo .halo { fill: #2563eb; opacity: .18; } .geo .halo.far { fill: var(--bad); }
+.geo .path { stroke: var(--bad); stroke-width: 2; stroke-dasharray: 4 4; fill: none; }
+.geo text { font-family: var(--fb); font-size: 11px; font-weight: 700; fill: var(--ink); }
+.geo text.m { fill: var(--muted); font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) { .geo .halo { animation: pulse 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; } @keyframes pulse { 50% { transform: scale(1.5); opacity: .05; } } }
+.steps { display: flex; gap: 6px; margin: 4px 0 2px; } .steps i { flex: 1; height: 4px; border-radius: 4px; background: var(--chip); } .steps i.on { background: var(--yolk); }
+.signout { border: 0; background: var(--chip); border-radius: 10px; padding: 7px 10px; font-weight: 700; font-size: 12.5px; }
+.geo-row { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.geo-row:first-of-type { border-top: 0; }
+.geo-row select { border: 1.5px solid var(--line); border-radius: 10px; padding: 7px 8px; font: inherit; background: var(--card); color: var(--ink); }
+.appr { border-top: 1px solid var(--line); padding: 12px 0; }
+.appr-item { display: flex; gap: 10px; align-items: center; padding: 8px 0; }
+.mini { border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 7px 10px; font-weight: 700; font-size: 12.5px; white-space: nowrap; }
+.mini.bad { color: var(--bad); }
+.banner { padding: 12px; border-radius: 14px; background: var(--bad-soft); color: var(--bad); font-weight: 600; margin-top: 10px; }
+.tree { display: grid; gap: 0; margin-top: 12px; justify-items: center; }
+.node { border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; background: var(--bg); display: grid; }
+.node.top { background: var(--yolk-soft); border-color: var(--yolk); }
+.vl { width: 2px; height: 16px; background: var(--line); }
+.branches { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+@media (max-width: 600px) { .branches { grid-template-columns: 1fr; } }
+.branch { display: grid; gap: 8px; justify-items: center; border-top: 2px solid var(--line); padding-top: 12px; min-width: 0; }
+.leaves { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 16px; font-size: 13px; }
+.lvform { display: grid; gap: 10px; margin-top: 12px; padding: 12px; border-radius: 14px; background: var(--bg); }
+.lvform select, .lvform input { border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 10px; font: inherit; background: var(--card); color: var(--ink); width: 100%; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
+.pthumb { position: relative; aspect-ratio: 1; max-width: 100%; }
+.pthumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
+.px { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-weight: 800; line-height: 1; padding: 0; }
+.padd { aspect-ratio: 1; max-width: 100%; border: 1.5px dashed var(--line); border-radius: 10px; background: var(--bg); color: var(--muted); font-weight: 700; font-size: 12px; display: grid; place-items: center; align-content: center; gap: 2px; padding: 4px; text-align: center; }
+.padd b { color: var(--ink); font-size: 13px; }
+.padd.full { border-style: solid; border-color: var(--ok); }
+.padd:disabled { opacity: .5; cursor: default; }
+.need { font-size: 12px; font-weight: 700; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; margin-bottom: -4px; }
+.need .ok { color: var(--ok); }
+.thumbs { flex-wrap: wrap; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--dark); color: var(--on-dark); padding: 11px 16px; border-radius: 12px; font-weight: 600; font-size: 14px; z-index: 30; max-width: calc(100% - 32px); }
+@media (prefers-reduced-motion: no-preference) { .toast { animation: up .2s ease-out; } @keyframes up { from { transform: translate(-50%, 10px); opacity: 0; } } }
+</style>
+
+<div class="pv"><div class="pv-in">
+  <div class="brand"><span class="egg" aria-hidden="true"></span>OMK Ops <span class="tag">Preview</span></div>
+  <span class="pv-l">See it as</span>
+  <div class="seg" id="roleSeg" role="tablist"></div>
+  <div class="pv-opts">
+    <label><input type="checkbox" id="optFar"> Pretend I'm away from the outlet</label>
+    <label><input type="checkbox" id="optSample"> Use sample photos</label>
+    <span class="num" id="clock"></span><button type="button" class="mini" id="skip">Skip ahead 2 hours</button>
+  </div>
+</div></div>
+<p class="note">This is a clickable preview with sample names and data. Tap the buttons at the top to see each person's screen. Nothing is saved, and the location check is simulated here. In the real app the camera and GPS check will work on the phone.</p>
+<main id="app"></main>
+<input type="file" id="pick" accept="image/*" hidden>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const at = (h, m) => { const d = new Date(); d.setHours(h, m, 0, 0); return d; };
+const fmt = (d) => d ? d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase() : '';
+const ini = (n) => n.split(' ').map(x => x[0]).join('').slice(0, 2).toUpperCase();
+
+const OUT = { rr: 'OMK RR Nagar', jp: 'OMK JP Nagar', all: 'any OMK outlet' };
+const ROLE = { clean: 'Housekeeping', chef: 'Chef', mgr: 'Store manager', ops: 'Ops manager', owner: 'Owner' };
+const STAFF = [
+  { id: 'manju', name: 'Manjula', role: 'clean', o: 'rr', shift: [11, 30] },
+  { id: 'ravi', name: 'Ravi K', role: 'chef', o: 'rr', shift: [11, 0] },
+  { id: 'suresh', name: 'Suresh', role: 'chef', o: 'rr', shift: [11, 0] },
+  { id: 'kavya', name: 'Kavya', role: 'mgr', o: 'rr', shift: [11, 0] },
+  { id: 'lakshmi', name: 'Lakshmi', role: 'clean', o: 'jp', shift: [11, 30] },
+  { id: 'imran', name: 'Imran', role: 'chef', o: 'jp', shift: [11, 0] },
+  { id: 'arjun', name: 'Arjun', role: 'mgr', o: 'jp', shift: [11, 0] },
+  { id: 'deepak', name: 'Deepak', role: 'ops', o: 'all', shift: [11, 0] },
+  { id: 'david', name: 'David', role: 'owner', o: 'all', shift: [11, 0] },
+];
+const who = (id) => STAFF.find(s => s.id === id);
+const ME = { clean: 'manju', chef: 'ravi', mgr: 'kavya', ops: 'deepak', owner: 'david' };
+const MGR = (o) => STAFF.find(s => s.o === o && s.role === 'mgr');
+const OPS = () => STAFF.find(s => s.role === 'ops');
+const homeO = () => { const o = who(ME[S.role]).o; return o === 'all' ? 'rr' : o; };
+const dayStr = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }); };
+
+const CL = {
+  clean_open: { role: 'clean', title: 'Housekeeping before opening', due: 'Before 12:15 pm', dueAt: [12, 15], items: [
+    { id: 'k', t: 'Kitchen floor and drains', type: 'ba' },
+    { id: 'd', t: 'Dining tables, chairs and floor', type: 'ba' },
+    { id: 'w', t: 'Washroom', type: 'ba' },
+    { id: 's', t: 'Washroom has soap, tissue and hand sanitiser', type: 'yn' },
+    { id: 'e', t: 'Entrance, glass door and signboard', type: 'ba' },
+    { id: 'p', t: 'Pet corner clean, water bowls filled', type: 'photo', hint: 'We are dog-friendly, so guests notice this' },
+    { id: 'b', t: 'Dustbins emptied, new liners in', type: 'yn' } ] },
+  clean_round: { role: 'clean', title: 'Washroom rounds', due: '3 pm, 6 pm and 9 pm', dueAt: [21, 15], items: [
+    { id: 'r1', t: '3 pm round', type: 'photo', hint: 'Floor dry, toilet and basin clean, supplies filled' },
+    { id: 'r2', t: '6 pm round', type: 'photo', hint: 'Floor dry, toilet and basin clean, supplies filled' },
+    { id: 'r3', t: '9 pm round', type: 'photo', hint: 'Floor dry, toilet and basin clean, supplies filled' } ] },
+  clean_close: { role: 'clean', title: 'Housekeeping after closing', due: 'After 11 pm', late: true, items: [
+    { id: 'k', t: 'Kitchen floor, drains and grease trap', type: 'ba' },
+    { id: 'd', t: 'Dining area swept and mopped', type: 'ba' },
+    { id: 'w', t: 'Washroom deep clean', type: 'ba' },
+    { id: 'g', t: 'Garbage taken out, bins washed', type: 'yn' },
+    { id: 'm', t: 'Floor mats washed and hung to dry', type: 'yn' },
+    { id: 'c', t: 'Cleaning chemicals stored away from food', type: 'yn' } ] },
+  chef_open: { role: 'chef', title: 'Kitchen opening', due: 'Before 12:15 pm', items: [
+    { id: 'g', t: 'Cap, apron and gloves on, hands washed', type: 'photo', hint: 'Photo of you in uniform' },
+    { id: 'f', t: 'Fridge temperature', type: 'num', unit: '°C', min: 1, max: 5, hint: 'Should be 1 to 5 °C' },
+    { id: 'z', t: 'Freezer temperature', type: 'num', unit: '°C', max: -18, hint: 'Should be −18 °C or colder' },
+    { id: 'e', t: 'Egg trays checked: no cracked or expired eggs', type: 'yn' },
+    { id: 'r', t: 'Raw and cooked food kept separately', type: 'yn' },
+    { id: 's', t: 'Gas lines and burners checked', type: 'yn' },
+    { id: 'c', t: 'Counters and equipment clean', type: 'photo' } ] },
+  chef_close: { role: 'chef', title: 'Kitchen closing', due: 'After 11 pm', late: true, items: [
+    { id: 'l', t: 'Leftovers covered, labelled and dated', type: 'yn' },
+    { id: 'o', t: 'Frying oil filtered or changed', type: 'yn' },
+    { id: 'f', t: 'Fridge temperature', type: 'num', unit: '°C', min: 1, max: 5, hint: 'Should be 1 to 5 °C' },
+    { id: 'g', t: 'All burner knobs off', type: 'photo' } ] },
+  mgr_open: { role: 'mgr', title: 'Outlet opening', due: 'Before 12:30 pm', items: [
+    { id: 'u', t: 'All staff in uniform', type: 'photo', hint: 'One photo of the team' },
+    { id: 'd', t: 'Dining ready: lights, AC, music on', type: 'photo' },
+    { id: 'p', t: 'Billing, Swiggy and Zomato tablets on', type: 'yn' },
+    { id: 'c', t: 'Cash float in the drawer', type: 'num', unit: '₹', min: 2000, max: 2000, hint: 'Should be ₹2,000' },
+    { id: 'f', t: 'FSSAI licence on display', type: 'yn' } ] },
+  mgr_close: { role: 'mgr', title: 'Outlet closing', due: 'After 11 pm', late: true, items: [
+    { id: 'c', t: 'Cash counted and matches billing', type: 'yn' },
+    { id: 'v', t: 'Main gas valve off', type: 'photo' },
+    { id: 's', t: 'Shutter locked', type: 'photo' },
+    { id: 'o', t: "Tomorrow's stock order sent", type: 'yn' } ] },
+};
+const ORDER = ['mgr_open', 'chef_open', 'clean_open', 'clean_round', 'mgr_close', 'chef_close', 'clean_close'];
+CL.mgr_open.dueAt = [12, 30]; CL.chef_open.dueAt = [12, 15];
+
+// sample photo: a small drawn tile so the preview has pictures
+function sample(label, hue) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${hue},45%,62%)"/><stop offset="1" stop-color="hsl(${hue + 30},40%,38%)"/></linearGradient></defs><rect width="160" height="120" fill="url(#g)"/><rect x="18" y="62" width="124" height="40" rx="6" fill="rgba(255,255,255,.22)"/><circle cx="122" cy="30" r="14" fill="rgba(255,255,255,.3)"/><text x="80" y="88" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">${label}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+const SELFIE = (n, hue) => sample(n, hue);
+
+const four = (label, hue) => [0, 1, 2, 3].map(n => sample(`${label} ${n + 1}`, hue + n * 14));
+const MINP = 4;   // at least 4 photos for every photo step
+
+// ---- state ----
+const S = {
+  role: 'clean', view: 'home', tab: 'today', filter: 'all',
+  att: {
+    suresh: { in: { t: at(11, 21), photo: SELFIE('Suresh', 25), m: 18, late: { reason: 'Bus stuck in traffic on Mysore Road', status: 'pending' } } },
+    lakshmi: { in: { t: at(11, 26), photo: SELFIE('Lakshmi', 330), m: 15 } },
+    imran: { in: { t: at(10, 58), photo: SELFIE('Imran', 200), m: 41 } },
+    arjun: { in: { t: at(10, 52), photo: SELFIE('Arjun', 140), m: 22 } },
+  },
+  runs: {
+    'jp:mgr_open': { by: 'arjun', t: at(12, 9), a: { u: { photos: four('Team', 140) }, d: { photos: four('Dining', 40) }, p: { v: 'y' }, c: { n: 2000 }, f: { v: 'y' } } },
+    'jp:chef_open': { by: 'imran', t: at(11, 41), a: { g: { photos: four('Uniform', 200) }, f: { n: 4 }, z: { n: -12 }, e: { v: 'y' }, r: { v: 'y' }, s: { v: 'y' }, c: { photos: four('Counter', 15) } } },
+    'jp:clean_open': { by: 'lakshmi', t: at(12, 2), a: {
+      k: { b: four('Before', 20), bt: at(11, 31), a: four('After', 160), at: at(11, 44) },
+      d: { b: four('Before', 35), bt: at(11, 45), a: four('After', 175), at: at(11, 52) },
+      w: { b: four('Before', 10), bt: at(11, 52), a: four('After', 190), at: at(11, 58) }, s: { v: 'y' },
+      e: { b: four('Before', 50), bt: at(11, 58), a: four('After', 120), at: at(12, 1) },
+      p: { photos: four('Pet corner', 90) }, b: { v: 'n', note: 'No liners left in store' } }, status: 'approved', appr: { by: 'arjun', t: at(12, 20) } },
+  },
+  issues: [
+    { id: 1, o: 'jp', what: 'Freezer at −12 °C (should be −18 °C or colder)', from: 'Kitchen opening', by: 'imran', t: at(11, 41), fixed: null },
+    { id: 3, o: 'rr', what: 'Hand-wash sink tap leaking in the kitchen', from: 'Reported by staff', by: 'suresh', t: new Date(Date.now() - 2.4 * 3600000), fixed: null },
+    { id: 2, o: 'jp', what: 'Dustbins: “No liners left in store”', from: 'Housekeeping before opening', by: 'lakshmi', t: at(12, 2), fixed: { t: at(12, 24), by: 'arjun', photo: sample('Liners in', 150) } },
+  ],
+  draft: null, drafts: {}, signedIn: {}, login: null, radius: { rr: 100, jp: 100 }, offset: 0, lvForm: false,
+  leaves: [
+    { id: 1, by: 'suresh', date: dayStr(1), days: 1, reason: "Sister's wedding", status: 'pending', t: at(10, 15) },
+    { id: 2, by: 'imran', date: dayStr(2), days: 2, reason: 'Going to native place', status: 'pending', t: at(9, 40) },
+    { id: 3, by: 'arjun', date: dayStr(3), days: 1, reason: 'Family function', status: 'pending', t: at(9, 5) },
+    { id: 4, by: 'lakshmi', date: dayStr(1), days: 1, reason: 'Doctor visit', status: 'approved', t: at(8, 50), dec: { by: 'arjun', t: at(10, 5) } },
+  ],
+};
+
+// ---- helpers ----
+const passOf = (it, ans) => {
+  if (!ans) return null;
+  if (it.type === 'yn') return ans.v ? ans.v === 'y' : null;
+  if (it.type === 'num') { if (ans.n === '' || ans.n == null || isNaN(ans.n)) return null; const n = +ans.n; return (it.min == null || n >= it.min) && (it.max == null || n <= it.max); }
+  if (it.type === 'photo') return (ans.photos || []).length >= MINP ? true : null;
+  if (it.type === 'ba') return (ans.b || []).length >= MINP && (ans.a || []).length >= MINP ? true : null;
+  return null;
+};
+const answered = (it, ans) => passOf(it, ans) !== null;
+const now = () => new Date(Date.now() + S.offset);
+const plus = (d, h) => new Date(d.getTime() + h * 3600000);
+// escalation: store manager first, ops manager after 2 h, owners after 4 h
+function level(i) { const h = (now() - i.t) / 3600000; return h < 2 ? 'mgr' : h < 4 ? 'ops' : 'owner'; }
+function escText(i) {
+  const l = level(i);
+  if (l === 'mgr') return `With ${MGR(i.o).name} (store manager) · goes to ${OPS().name} (ops manager) at ${fmt(plus(i.t, 2))} if not fixed`;
+  if (l === 'ops') return `Not fixed in 2 h · now with ${OPS().name} (ops manager) · goes to the owners at ${fmt(plus(i.t, 4))}`;
+  return `Not fixed in 4 h · now with the owners`;
+}
+const approverOf = (l) => who(l.by).role === 'mgr' ? OPS() : MGR(who(l.by).o);
+const score = (id, a) => { const its = CL[id].items; return { pass: its.filter(i => passOf(i, a[i.id]) === true).length, total: its.length }; };
+const isLate = (s) => { const a = S.att[s.id]?.in; if (!a) return false; return a.t > at(s.shift[0], s.shift[1] + 15); };
+function ring(p, ok) { const r = 18, c = 2 * Math.PI * r; return `<svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="bg" cx="22" cy="22" r="${r}"/><circle class="fg ${ok ? 'ok' : ''}" cx="22" cy="22" r="${r}" stroke-dasharray="${c * p} ${c}"/><text x="22" y="22">${Math.round(p * 100)}%</text></svg>`; }
+function toast(m) { document.querySelector('.toast')?.remove(); const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+
+let pickCb = null;
+function photo(kind, label, cb) {
+  if ($('optSample').checked) { cb(sample(label, Math.floor(Math.random() * 360))); return; }
+  pickCb = cb; const p = $('pick'); p.value = ''; p.setAttribute('capture', kind === 'selfie' ? 'user' : 'environment'); p.click();
+}
+$('pick').addEventListener('change', (e) => { const f = e.target.files[0]; if (f && pickCb) pickCb(URL.createObjectURL(f)); pickCb = null; });
+
+// ---- sign in: only works inside the outlet's geo-fence ----
+const PHONE = { manju: '98450 21734', ravi: '99016 40218', kavya: '97412 88305' };
+function geoSvg(state, m) {
+  // outlet in the middle, dashed circle = allowed area, blue dot = the phone
+  const far = state === 'far', ok = state === 'ok';
+  const me = far ? [272, 34] : [158 + (m || 20) * 0.35, 92 - (m || 20) * 0.2];
+  return `<svg class="geo" viewBox="0 0 320 170" role="img" aria-label="${far ? 'You are outside the outlet area' : 'You are inside the outlet area'}">
+    <path class="street" d="M0 120 H320 M60 0 V170 M230 0 V170 M0 40 C120 52 200 30 320 46"/>
+    <circle class="zone ${ok ? 'ok' : ''}" cx="140" cy="100" r="54"/>
+    <path class="pin" d="M140 100 c-9-11-14-18-14-24 a14 14 0 0 1 28 0 c0 6-5 13-14 24z"/><circle class="pin-in" cx="140" cy="76" r="5"/>
+    <text x="140" y="166" text-anchor="middle">${OUT[homeO()]} · ${S.radius[homeO()]} m area</text>
+    ${far ? `<path class="path" d="M150 84 L${me[0] - 8} ${me[1] + 6}"/><text x="205" y="70" class="m">2.4 km</text>` : ''}
+    ${state === 'checking' ? '' : `<circle class="halo ${far ? 'far' : ''}" cx="${me[0]}" cy="${me[1]}" r="14"/><circle class="me ${far ? 'far' : ''}" cx="${me[0]}" cy="${me[1]}" r="7"/>`}
+    ${state === 'checking' ? `<circle class="halo" cx="140" cy="100" r="54"/>` : ''}
+  </svg>`;
+}
+function loginScreen() {
+  const me = who(ME[S.role]), L = S.login || (S.login = { step: 'form' }), o = OUT[me.o], r = S.radius[homeO()];
+  const lateNow = me.o !== 'all' && now() > at(me.shift[0], me.shift[1] + 15);
+  const bar = (n) => `<div class="steps" aria-hidden="true">${[1, 2, 3].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</div>`;
+  let body = '';
+  if (L.step === 'form') body = `${bar(1)}<span class="k">Step 1 of 3 · Your login</span>
+    <div class="field"><label for="lgPhone">Phone number</label><input id="lgPhone" inputmode="numeric" value="${PHONE[me.id]}"></div>
+    <div class="field"><label for="lgPin">PIN</label><input id="lgPin" inputmode="numeric" type="password" maxlength="6" value="482913"></div>
+    <p class="sub" style="margin:12px 0">You can sign in only when you are inside ${o}. Turn on location on your phone.</p>
+    <button class="btn yolk" data-a="lg-go">Sign in</button>`;
+  if (L.step === 'checking') body = `${bar(2)}<span class="k">Step 2 of 3 · Location check</span>
+    <h2 style="margin-top:6px">Checking you're at ${me.o === 'all' ? 'an OMK outlet' : o}…</h2>${geoSvg('checking')}`;
+  if (L.step === 'far') body = `${bar(2)}<span class="k">Step 2 of 3 · Location check</span>
+    <h2 style="margin-top:6px;color:var(--bad)">You're 2.4 km from ${OUT[homeO()]}</h2>${geoSvg('far')}
+    <p class="sub" style="margin:12px 0">You can only sign in inside the outlet (within ${r} m). Go to the outlet and try again. This attempt is recorded for the owner.</p>
+    <button class="btn" data-a="lg-retry">Try again</button>`;
+  if (L.step === 'ok') body = `${bar(3)}<span class="k">Step 3 of 3 · Selfie</span>
+    <h2 style="margin-top:6px;color:var(--ok)">You're at ${OUT[homeO()]} ✓</h2>${geoSvg('ok', L.m)}
+    <p class="sub num" style="margin:12px 0">${L.m} m from the outlet pin, inside the ${r} m area. Take a selfie to start your shift.</p>
+    ${lateNow ? `<div class="field" style="margin-bottom:12px"><label for="lgLate">Your shift started at ${fmt(at(...me.shift))}. You're ${mins(at(...me.shift), now())} late. Why?</label><input id="lgLate" placeholder="This goes to ${me.role === 'mgr' ? 'the ops manager' : 'your store manager'}"></div>` : ''}
+    <button class="btn yolk" data-a="lg-selfie">Take selfie and start shift</button>`;
+  return `<section class="card login"><div class="row"><div class="grow"><span class="k">OMK staff app</span><h1>Sign in at your outlet</h1><span class="sub">${esc(me.name)} · ${ROLE[me.role]} · ${o}</span></div></div><div style="margin-top:14px">${body}</div></section>`;
+}
+function loginGo() {
+  S.login = { step: 'checking' }; draw();
+  setTimeout(() => {
+    if ($('optFar').checked) { S.login = { step: 'far' }; S.blocked = S.blocked || []; S.blocked.unshift({ id: ME[S.role], t: now() }); }
+    else S.login = { step: 'ok', m: 8 + Math.floor(Math.random() * 40) };
+    draw();
+  }, 1400);
+}
+function loginSelfie() {
+  const me = who(ME[S.role]), m = S.login.m, lr = $('lgLate');
+  if (lr && !lr.value.trim()) { toast('Write why you are late. Your manager will see it.'); lr.focus(); return; }
+  const late = lr ? { reason: lr.value.trim(), status: 'pending' } : null;
+  photo('selfie', me.name, (img) => {
+    S.att[me.id] = S.att[me.id] || {}; if (!S.att[me.id].in) S.att[me.id].in = { t: now(), photo: img, m, late };
+    S.signedIn[S.role] = true; S.login = null; draw(); toast(late ? `Signed in. ${me.role === 'mgr' ? OPS().name : MGR(me.o).name} will see your reason.` : `Signed in at ${fmt(now())}. Shift started.`);
+  });
+}
+
+// ---- staff home ----
+function staffHome() {
+  const me = who(ME[S.role]), a = S.att[me.id] || {}, inn = a.in, out = a.out;
+  const mine = ORDER.filter(id => CL[id].role === me.role);
+  let attHtml;
+  if (S.checking) attHtml = `<div class="att-state"><span class="dot"></span><div><b>Checking your location…</b><span class="sub">Making sure you're at ${OUT[me.o]}</span></div></div>`;
+  else if (S.attErr) attHtml = `<div class="att-state bad"><span class="dot bad"></span><div><b>You're 2.4 km from ${OUT[me.o]}</b><span class="sub">You can only check in at your own outlet. Go to the outlet and try again.</span></div></div>
+      <button class="btn" data-a="checkin">Try again</button>`;
+  else if (!inn) attHtml = `<div class="att-state"><span class="dot"></span><div><b>Not checked in</b><span class="sub">Shift starts ${fmt(at(...me.shift))}</span></div></div>
+      <button class="btn yolk" data-a="checkin">Check in with selfie</button>`;
+  else attHtml = `<div class="att-state ok"><div class="av"><img src="${inn.photo}" alt="Your check-in selfie"></div><div class="grow"><b class="num">In at ${fmt(inn.t)} ${isLate(me) ? '<span class="pill warn">Late</span>' : '<span class="pill ok">On time</span>'}</b>
+      <span class="sub">At ${OUT[me.o]} · ${inn.m} m from the outlet</span>${out ? `<span class="sub num" style="display:block">Out at ${fmt(out.t)} · ${hours(inn.t, out.t)}</span>` : ''}</div></div>
+      ${out ? '' : '<button class="btn ghost" data-a="checkout">Check out with selfie</button>'}`;
+  const cls = mine.map(id => {
+    const run = S.runs[me.o + ':' + id], d = S.drafts[id], c = CL[id];
+    let p = 0, right;
+    if (run) { const s = score(id, run.a); p = s.pass / s.total; right = `<span class="pill ${s.pass === s.total ? 'ok' : 'bad'}">Done · ${s.pass}/${s.total} passed</span>`
+      + (run.status === 'pending' ? ` <span class="pill y">Waiting for ${MGR(me.o).name} to approve</span>` : run.status === 'approved' ? ' <span class="pill ok">Approved</span>' : ''); }
+    else if (d?.back) { p = c.items.filter(i => answered(i, d.a[i.id])).length / c.items.length; right = `<span class="pill bad">Sent back: redo ${esc(d.back.item)}</span>`; }
+    else { const n = d ? c.items.filter(i => answered(i, d.a[i.id])).length : 0; p = n / c.items.length; right = `<span class="pill ${c.late ? '' : 'y'}">${c.due}</span>`; }
+    return `<button class="cl" data-open="${id}" ${!inn || run ? 'disabled' : ''}>${ring(p, !!run)}<span class="grow"><h3>${c.title}</h3><span class="sub">${c.items.length} checks${run ? ' · by ' + esc(who(run.by).name) + ' at ' + fmt(run.t) : ''}</span><br>${right}</span>${run ? '' : '<span class="chev">›</span>'}</button>`;
+  }).join('');
+  let extra = '';
+  const myLv = S.leaves.filter(l => l.by === me.id), apv = approverOf({ by: me.id });
+  const lvPill = (l) => l.status === 'pending' ? `<span class="pill y">Waiting for ${esc(approverOf(l).name)}</span>` : l.status === 'approved' ? `<span class="pill ok">Approved by ${esc(who(l.dec.by).name)}</span>` : `<span class="pill bad">Rejected by ${esc(who(l.dec.by).name)}</span>`;
+  const leaveCard = `<section class="card"><div class="row"><h2 class="grow">Leave</h2>${S.lvForm ? '' : '<button class="mini" data-a="lv-new">Ask for leave</button>'}</div>
+    ${S.lvForm ? `<div class="lvform"><div class="two"><label class="sub" for="lvDate">Date<select id="lvDate">${[1, 2, 3, 4, 5, 6, 7].map(n => `<option>${dayStr(n)}</option>`).join('')}</select></label>
+      <label class="sub" for="lvDays">Days<select id="lvDays"><option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option></select></label></div>
+      <label class="sub" for="lvWhy">Reason<input id="lvWhy" placeholder="e.g. Family function"></label>
+      <div class="two"><button class="btn ghost" data-a="lv-cancel">Cancel</button><button class="btn" data-a="lv-send">Send to ${esc(apv.name)}</button></div></div>` : ''}
+    ${myLv.length ? myLv.map(l => `<div class="geo-row"><div class="grow"><b class="num">${l.date} · ${l.days} day${l.days > 1 ? 's' : ''}</b><div class="sub">${esc(l.reason)}</div></div>${lvPill(l)}</div>`).join('') : (S.lvForm ? '' : '<p class="sub" style="margin:8px 0 0">No leave requests. Your request goes to ' + esc(apv.name) + '.</p>')}</section>`;
+  if (me.role === 'mgr') {
+    extra += approvals(me.o);
+    const team = STAFF.filter(s => s.o === me.o && s.id !== me.id);
+    const iss = S.issues.filter(i => i.o === me.o);
+    extra += `<section class="card"><h2>Team today</h2><div class="list" style="margin-top:10px">${team.map(s => { const x = S.att[s.id]?.in; return `<div class="row"><div class="av sm">${x ? `<img src="${x.photo}" alt="">` : ini(s.name)}</div><div class="grow"><b>${esc(s.name)}</b> <span class="sub">${ROLE[s.role]}</span></div>${x ? `<span class="pill ${isLate(s) ? 'warn' : 'ok'} num">${isLate(s) ? 'Late · ' : ''}${fmt(x.t)}</span>` : '<span class="pill bad">Not in</span>'}</div>`; }).join('')}</div></section>
+      <section class="card"><h2>Problems to fix</h2>${iss.length ? iss.map(issueHtml).join('') : '<p class="sub" style="margin:8px 0 0">Nothing to fix. Failed checks from your team will show up here.</p>'}</section>`;
+  }
+  return `<section class="card"><div class="row"><div class="av">${ini(me.name)}</div><div class="grow"><h1>Hi ${esc(me.name.split(' ')[0])}</h1><span class="sub">${ROLE[me.role]} · ${OUT[me.o]}</span></div><button class="signout" data-a="signout">Sign out</button></div>${attHtml}</section>
+    <section class="list"><h2 style="margin-top:4px">Your checklists today</h2>${inn ? '' : '<p class="sub" style="margin:0">Check in first to start your checklists.</p>'}${cls}</section>${extra}${leaveCard}`;
+}
+const dur = (m) => m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`;
+const mins = (a, b) => a && b ? dur(Math.max(0, Math.round((b - a) / 60000))) : '';
+const hours = (a, b) => { const m = Math.max(0, Math.round((b - a) / 60000)); return `${Math.floor(m / 60)} h ${m % 60} min`; };
+
+function doAttendance(kind) {
+  const me = who(ME[S.role]);
+  photo('selfie', me.name, (img) => {
+    S.checking = true; S.attErr = false; draw();
+    setTimeout(() => {
+      S.checking = false;
+      if ($('optFar').checked) { S.attErr = true; draw(); return; }
+      const rec = { t: now(), photo: img, m: 8 + Math.floor(Math.random() * 40) };
+      S.att[me.id] = S.att[me.id] || {}; S.att[me.id][kind] = rec; draw();
+      toast(kind === 'in' ? `Checked in at ${fmt(rec.t)}` : `Checked out at ${fmt(rec.t)}`);
+    }, 1100);
+  });
+}
+
+// ---- store manager approvals ----
+const lateAppr = (s) => { const x = S.att[s.id].in; return `<div class="appr"><div class="row"><div class="av sm"><img src="${x.photo}" alt=""></div><div class="grow"><b>${esc(s.name)} came late</b><div class="sub num">${ROLE[s.role]} · in at ${fmt(x.t)} · shift ${fmt(at(...s.shift))} · ${mins(at(...s.shift), x.t)} late</div><div class="sub">Reason: “${esc(x.late.reason)}”</div></div></div>
+  <div class="yn" style="margin-top:10px"><button class="y" data-late="${s.id}:accepted">Accept reason</button><button class="n" data-late="${s.id}:marked">Mark as late</button></div></div>`; };
+const leaveAppr = (l) => `<div class="appr"><div class="row"><div class="av sm">${ini(who(l.by).name)}</div><div class="grow"><b>${esc(who(l.by).name)} asks for leave</b><div class="sub num">${ROLE[who(l.by).role]} · ${l.date} · ${l.days} day${l.days > 1 ? 's' : ''}</div><div class="sub">Reason: “${esc(l.reason)}”</div></div></div>
+  <div class="yn" style="margin-top:10px"><button class="y" data-leave="${l.id}:approved">Approve</button><button class="n" data-leave="${l.id}:rejected">Reject</button></div></div>`;
+function approvals(o) {
+  const hk = ORDER.filter(id => CL[id].role === 'clean' && S.runs[o + ':' + id]?.status === 'pending');
+  const lv = S.leaves.filter(l => l.status === 'pending' && who(l.by).o === o && who(l.by).role !== 'mgr');
+  const lt = STAFF.filter(s => s.o === o && s.role !== 'mgr' && S.att[s.id]?.in?.late?.status === 'pending');
+  const n = hk.length + lv.length + lt.length;
+  let h = `<section class="card"><h2>Waiting for your approval ${n ? `<span class="pill y num">${n}</span>` : ''}</h2>`;
+  if (!n) h += '<p class="sub" style="margin:8px 0 0">Nothing to approve right now.</p>';
+  hk.forEach(id => { const r = S.runs[o + ':' + id], c = CL[id];
+    h += `<div class="appr"><div class="row"><div class="grow"><b>${c.title}</b><div class="sub">${esc(who(r.by).name)} · submitted ${fmt(r.t)}. Check the photos.</div></div><span class="pill y">Photos</span></div>
+      ${c.items.filter(it => it.type === 'ba' || it.type === 'photo').map(it => { const a = r.a[it.id];
+        return `<div class="appr-item"><div class="grow"><b>${esc(it.t)}</b>${it.type === 'ba' && a.bt ? `<div class="sub">took ${mins(a.bt, a.at)}</div>` : ''}${it.type === 'ba' ? `<div class="sub">Before</div><div class="thumbs" style="margin-top:4px">${a.b.map(x => `<img src="${x}" alt="Before">`).join('')}</div><div class="sub" style="margin-top:6px">After</div><div class="thumbs" style="margin-top:4px">${a.a.map(x => `<img src="${x}" alt="After">`).join('')}</div>` : `<div class="thumbs">${a.photos.map(x => `<img src="${x}" alt="">`).join('')}</div>`}</div><button class="mini bad" data-redo="${o}:${id}:${it.id}">Send back</button></div>`; }).join('')}
+      <button class="btn" style="margin-top:6px" data-approve="${o}:${id}">Approve all</button></div>`; });
+  lt.forEach(s => { h += lateAppr(s); });
+  lv.forEach(l => { h += leaveAppr(l); });
+  return h + '</section>';
+}
+
+// ---- checklist screen ----
+function checklist() {
+  const d = S.draft, c = CL[d.id];
+  const done = c.items.filter(i => answered(i, d.a[i.id])).length;
+  const items = c.items.map(it => {
+    const a = d.a[it.id] || {}, p = passOf(it, a);
+    let body = '';
+    if (it.type === 'yn') body = `<div class="yn"><button class="y ${a.v === 'y' ? 'on' : ''}" data-yn="${it.id}:y">Yes</button><button class="n ${a.v === 'n' ? 'on' : ''}" data-yn="${it.id}:n">No</button></div>
+      ${a.v === 'n' ? `<input class="txt" id="note-${it.id}" data-note="${it.id}" placeholder="What's wrong? (optional)" value="${esc(a.note)}">` : ''}`;
+    if (it.type === 'num') body = `<div class="numin"><input id="num-${it.id}" data-num="${it.id}" type="number" inputmode="decimal" step="any" value="${a.n ?? ''}" placeholder="0"><b>${it.unit}</b><span id="np-${it.id}">${p === true ? '<span class="pill ok">OK</span>' : p === false ? '<span class="pill bad">Out of range</span>' : ''}</span></div>`;
+    const grid = (arr, key, label, off) => `<div class="pgrid">${arr.map((src, n) => `<div class="pthumb"><img src="${src}" alt="${label} photo ${n + 1}"><button class="px" data-rm="${it.id}:${key}:${n}" aria-label="Remove photo ${n + 1}">×</button></div>`).join('')}<button class="padd ${arr.length >= MINP ? 'full' : ''}" data-shot="${it.id}:${key}" ${off ? 'disabled' : ''}>📷<span>${label}</span><b class="num">${arr.length}/${MINP}</b></button></div>`;
+    const need = (txt, arr, extra) => `<div class="need"><span>${txt}${extra ? ' · ' + extra : ''}</span><span class="num ${arr.length >= MINP ? 'ok' : ''}">${arr.length >= MINP ? '✓ ' + arr.length + ' photos' : 'at least ' + MINP + ' photos'}</span></div>`;
+    if (it.type === 'photo') { const ph = a.photos || []; body = `${need('Photos', ph)}${grid(ph, 'photos', 'Add photo')}`; }
+    if (it.type === 'ba') { const b = a.b || [], af = a.a || [], ready = b.length >= MINP;
+      body = `${need('Before cleaning', b, a.bt ? 'from ' + fmt(a.bt) : '')}${grid(b, 'b', 'Before')}
+        ${need('After cleaning', af, a.at ? fmt(a.at) + ' · took ' + mins(a.bt, a.at) : '')}${grid(af, 'a', ready ? 'After' : 'Before first', !ready)}`; }
+    return `<div class="item"><div class="item-h"><b>${esc(it.t)}</b>${p === true ? '<span class="pill ok">✓</span>' : p === false ? '<span class="pill bad">✕</span>' : ''}</div>${it.hint ? `<span class="sub" style="margin-top:-6px">${esc(it.hint)}</span>` : ''}${body}</div>`;
+  }).join('');
+  return `<div><button class="back" data-a="home">‹ Back · your answers are kept</button></div>
+    <section class="card"><span class="k">${OUT[who(ME[S.role]).o]} · ${c.due}</span><h1 style="margin-top:4px">${c.title}</h1>${d.back ? `<div class="banner">${esc(who(d.back.by).name)} sent this back: redo “${esc(d.back.item)}”. Take new before and after photos.</div>` : ''}${items}</section>
+    <div class="foot"><button class="btn yolk" data-a="submit" ${done < c.items.length ? 'disabled' : ''}>Submit checklist · <span class="num">${done}/${c.items.length}</span></button></div>`;
+}
+function submit() {
+  const d = S.draft, c = CL[d.id], me = who(ME[S.role]), t0 = now();
+  S.runs[me.o + ':' + d.id] = { by: me.id, t: t0, a: d.a, status: c.role === 'clean' ? 'pending' : null };
+  const mgr = STAFF.find(s => s.o === me.o && s.role === 'mgr');
+  let n = 0;
+  c.items.forEach(it => { if (passOf(it, d.a[it.id]) === false) {
+    const a = d.a[it.id]; n++;
+    const what = it.type === 'num' ? `${it.t} at ${a.n} ${it.unit} (${it.hint.replace('Should be', 'should be')})` : `${it.t}: No${a.note ? ' – “' + a.note + '”' : ''}`;
+    S.issues.unshift({ id: Date.now() + n, o: me.o, what, from: c.title, by: me.id, t: t0, fixed: null });
+  } });
+  delete S.drafts[d.id]; S.draft = null; S.view = 'home'; draw();
+  toast((n ? `Submitted. ${n} problem${n > 1 ? 's' : ''} sent to ${mgr.name}.` : 'Submitted. All checks passed.') + (c.role === 'clean' ? ` ${mgr.name} will check the photos.` : ''));
+}
+
+// ---- issues ----
+function issueHtml(i) {
+  const lv = level(i), canFix = !i.fixed && (S.role === 'owner' || S.role === 'ops' || (S.role === 'mgr' && who(ME.mgr).o === i.o));
+  return `<div class="issue"><span class="stripe ${i.fixed ? 'ok' : ''}"></span><div class="grow"><b>${esc(i.what)}</b>
+    <div class="sub">${esc(i.from)} · ${OUT[i.o]} · ${esc(who(i.by).name)} at ${fmt(i.t)}</div>
+    ${i.fixed ? `<div class="sub">Fixed by ${esc(who(i.fixed.by).name)} at ${fmt(i.fixed.t)}</div><div class="thumbs"><img src="${i.fixed.photo}" alt="Photo after fixing"></div>` : `<div class="sub">${escText(i)}</div>`}
+    ${canFix ? `<button class="btn ghost" style="margin-top:10px;padding:9px" data-fix="${i.id}">Mark fixed with photo</button>` : ''}</div>
+    <span class="pill ${i.fixed ? 'ok' : lv === 'mgr' ? 'bad' : 'warn'}">${i.fixed ? 'Fixed' : lv === 'mgr' ? 'Open' : lv === 'ops' ? 'Escalated · Ops' : 'Escalated · Owners'}</span></div>`;
+}
+
+// ---- owner ----
+function tree() {
+  return `<section class="card"><h2>Team structure</h2><p class="sub" style="margin:4px 0 0">Who reports to whom. Problems move up if they are not fixed in time.</p>
+    <div class="tree"><div class="node top"><b>Owners</b><span class="sub">David and the OMK owners</span></div><i class="vl"></i>
+    <div class="node"><b>${esc(OPS().name)}</b><span class="sub">Ops manager · both outlets</span></div><i class="vl"></i>
+    <div class="branches">${['rr', 'jp'].map(o => `<div class="branch"><div class="node"><b>${esc(MGR(o).name)}</b><span class="sub">Store manager · ${OUT[o].replace('OMK ', '')}</span></div>
+      <div class="leaves">${STAFF.filter(s => s.o === o && s.role !== 'mgr').map(s => `<span class="pill">${esc(s.name)} · ${ROLE[s.role]}</span>`).join('')}</div></div>`).join('')}</div></div>
+    <div class="flow"><span class="pill bad">Problem reported</span><span>→</span><span class="pill">Store manager</span><span class="sub">2 h →</span><span class="pill warn">Ops manager</span><span class="sub">2 h more →</span><span class="pill y">Owners</span></div>
+    <div class="flow"><span class="pill">Staff leave, late check-in, housekeeping photos</span><span>→</span><span class="pill">Store manager approves</span><span class="sub">· store manager's leave → ops manager</span></div></section>`;
+}
+function needs(kind) {
+  const iss = S.issues.filter(i => !i.fixed && level(i) === kind);
+  const lv = kind === 'ops' ? S.leaves.filter(l => l.status === 'pending' && who(l.by).role === 'mgr') : [];
+  const lt = kind === 'ops' ? STAFF.filter(s => s.role === 'mgr' && S.att[s.id]?.in?.late?.status === 'pending') : [];
+  const n = iss.length + lv.length + lt.length;
+  return `<section class="card" ${n ? 'style="border-color:var(--bad)"' : ''}><h2>${kind === 'ops' ? 'Needs you' : 'Escalated to owners'} ${n ? `<span class="pill bad num">${n}</span>` : ''}</h2>
+    ${n ? '' : `<p class="sub" style="margin:8px 0 0">${kind === 'ops' ? 'Nothing escalated to you. Problems come here when a store manager has not fixed them in 2 hours.' : 'Nothing escalated. Problems come here when the ops manager has not fixed them in 2 more hours.'}</p>`}
+    ${iss.map(issueHtml).join('')}${lt.map(lateAppr).join('')}${lv.map(leaveAppr).join('')}</section>`;
+}
+function dash(kind) {
+  const outs = S.filter === 'all' ? ['rr', 'jp'] : [S.filter];
+  const cards = ['rr', 'jp'].map(o => {
+    const st = STAFF.filter(s => s.o === o), present = st.filter(s => S.att[s.id]?.in).length, late = st.filter(isLate).length;
+    const doneN = ORDER.filter(id => S.runs[o + ':' + id]).length, open = S.issues.filter(i => i.o === o && !i.fixed).length;
+    return `<section class="card ol"><h2>${OUT[o]} ${late ? `<span class="pill warn">${late} late</span>` : ''}</h2>
+      <div class="stats num"><div class="stat ${present === st.length ? 'ok' : ''}"><b>${present}/${st.length}</b><span>Checked in</span></div>
+      <div class="stat"><b>${doneN}/${ORDER.length}</b><span>Checklists done</span></div>
+      <div class="stat ${open ? 'bad' : 'ok'}"><b>${open}</b><span>Problems open</span></div></div></section>`;
+  }).join('');
+  const tabs = [['today', 'Checklists'], ['att', 'Attendance'], ['lv', 'Leave'], ['iss', 'Problems'], ['ph', 'Photos']];
+  let body = '';
+  if (S.tab === 'today') {
+    body = `<div class="tbl-wrap"><table><thead><tr><th>Outlet</th><th>Checklist</th><th>Due</th><th>Status</th><th>Done by</th><th></th></tr></thead><tbody>${
+      outs.flatMap(o => ORDER.map(id => { const r = S.runs[o + ':' + id], c = CL[id]; let st;
+        if (r) { const s = score(id, r.a); st = `<span class="pill ${s.pass === s.total ? 'ok' : 'bad'} num">${s.pass}/${s.total} passed</span>` + (r.status === 'pending' ? ' <span class="pill y">Waiting approval</span>' : r.status === 'approved' ? ' <span class="pill ok">Approved</span>' : ''); }
+        else st = c.late ? '<span class="pill">Later today</span>' : (c.dueAt && now() > at(...c.dueAt) ? '<span class="pill bad">Not done</span>' : '<span class="pill y">Pending</span>');
+        return `<tr><td>${OUT[o].replace('OMK ', '')}</td><td><b>${c.title}</b><div class="sub">${ROLE[c.role]}</div></td><td class="sub">${c.due}</td><td>${st}</td><td class="num">${r ? esc(who(r.by).name) + ' · ' + fmt(r.t) : '–'}</td><td>${r ? `<button class="linkbtn" data-view="${o}:${id}">View</button>` : ''}</td></tr>`; })).join('')}</tbody></table></div>`;
+  }
+  if (S.tab === 'att') {
+    body = `<div class="tbl-wrap"><table><thead><tr><th>Person</th><th>Outlet</th><th>Shift</th><th>In</th><th>Out</th><th>Location</th></tr></thead><tbody>${
+      STAFF.filter(s => outs.includes(s.o)).map(s => { const a = S.att[s.id] || {};
+        return `<tr><td><div class="row"><div class="av sm">${a.in ? `<img src="${a.in.photo}" alt="">` : ini(s.name)}</div><div><b>${esc(s.name)}</b><div class="sub">${ROLE[s.role]}</div></div></div></td>
+        <td>${OUT[s.o].replace('OMK ', '')}</td><td class="num">${fmt(at(...s.shift))}</td>
+        <td class="num">${a.in ? fmt(a.in.t) + (isLate(s) ? ' <span class="pill warn">Late</span>' : '') + (a.in.late ? `<div class="sub">“${esc(a.in.late.reason)}” · ${a.in.late.status === 'pending' ? 'waiting for ' + esc(MGR(s.o).name) : a.in.late.status === 'accepted' ? 'reason accepted' : 'marked late'}</div>` : '') : '<span class="pill bad">Not in</span>'}</td>
+        <td class="num">${a.out ? fmt(a.out.t) : '–'}</td><td>${a.in ? `<span class="pill ok num">✓ ${a.in.m} m away</span>` : '–'}</td></tr>`; }).join('')}</tbody></table></div>`;
+  }
+  if (S.tab === 'lv') {
+    const l = S.leaves.filter(x => outs.includes(who(x.by).o));
+    body = l.length ? l.map(x => `<div class="geo-row"><div class="av sm">${ini(who(x.by).name)}</div><div class="grow"><b>${esc(who(x.by).name)}</b> <span class="sub">${ROLE[who(x.by).role]} · ${OUT[who(x.by).o].replace('OMK ', '')}</span><div class="sub num">${x.date} · ${x.days} day${x.days > 1 ? 's' : ''} · “${esc(x.reason)}”</div></div>${x.status === 'pending' ? `<span class="pill y">Waiting for ${esc(approverOf(x).name)}</span>` : x.status === 'approved' ? `<span class="pill ok">Approved by ${esc(who(x.dec.by).name)}</span>` : `<span class="pill bad">Rejected by ${esc(who(x.dec.by).name)}</span>`}</div>`).join('') : '<p class="sub">No leave requests.</p>';
+  }
+  if (S.tab === 'iss') { const l = S.issues.filter(i => outs.includes(i.o)); body = l.length ? l.map(issueHtml).join('') : '<p class="sub">No problems reported today.</p>'; }
+  if (S.tab === 'ph') {
+    const ps = [];
+    outs.forEach(o => ORDER.forEach(id => { const r = S.runs[o + ':' + id]; if (!r) return; CL[id].items.forEach(it => { const a = r.a[it.id]; if (it.type === 'ba') ps.push({ o, t: it.t, by: r.by, b: a.b, a: a.a, took: mins(a.bt, a.at) }); else if (it.type === 'photo') ps.push({ o, t: it.t, by: r.by, one: a.photos }); }); }));
+    body = ps.length ? `<div class="feed">${ps.map(p => `<div><b>${esc(p.t)}</b><div class="sub">${OUT[p.o].replace('OMK ', '')} · ${esc(who(p.by).name)}${p.took ? ' · took ' + p.took : ''}</div>${p.one ? `<div class="pair">${p.one.map(x => `<figure><img src="${x}" alt=""></figure>`).join('')}</div>` : `<div class="pair">${p.b.slice(0, 2).map(x => `<figure><img src="${x}" alt=""><figcaption>Before</figcaption></figure>`).join('')}${p.a.slice(0, 2).map(x => `<figure><img src="${x}" alt=""><figcaption>After</figcaption></figure>`).join('')}</div><div class="sub" style="margin-top:4px">${p.b.length} before · ${p.a.length} after</div>`}</div>`).join('')}</div>` : '<p class="sub">Photos from submitted checklists show up here.</p>';
+  }
+  const date = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+  return `<div class="row" style="flex-wrap:wrap"><div class="grow"><span class="k">${date}</span><h1>${kind === 'ops' ? 'Hi ' + esc(OPS().name) + ' · both outlets' : 'Both outlets today'}</h1></div>${kind === 'ops' ? '<button class="signout" data-a="signout">Sign out</button>' : ''}
+      <div class="seg" id="outSeg">${[['all', 'All'], ['rr', 'RR Nagar'], ['jp', 'JP Nagar']].map(([k, l]) => `<button class="${S.filter === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div></div>
+    <div class="kpis">${cards}</div>
+    ${needs(kind)}
+    ${(S.blocked || []).length ? `<section class="card" style="border-color:var(--bad)"><h2>Sign-in blocked outside the outlet</h2>${S.blocked.map(b => `<div class="geo-row"><span class="pill bad">Blocked</span><b>${esc(who(b.id).name)}</b><span class="sub num">tried at ${fmt(b.t)} · 2.4 km from ${OUT[who(b.id).o === 'all' ? 'rr' : who(b.id).o]}</span></div>`).join('')}</section>` : ''}
+    <section class="card"><div class="tabs">${tabs.map(([k, l]) => `<button class="${S.tab === k ? 'on' : ''}" data-tab="${k}">${l}${k === 'iss' ? ` <span class="num">(${S.issues.filter(i => !i.fixed && outs.includes(i.o)).length})</span>` : ''}</button>`).join('')}</div><div style="margin-top:12px">${body}</div></section>
+    ${tree()}${kind !== 'owner' ? '' : `<section class="card"><h2>Outlet locations</h2><p class="sub" style="margin:4px 0 6px">Staff can sign in and check in only inside this area around the outlet.</p>
+      ${['rr', 'jp'].map(o => `<div class="geo-row"><div class="grow"><b>${OUT[o]}</b><div class="sub">${o === 'rr' ? 'Shri Complex, Krishna Garden Rd, RR Nagar' : '23rd Main Rd, JP Nagar 2nd Phase'} · pin set on Google Maps</div></div>
+      <label class="sub" for="rad-${o}">Allowed within</label><select id="rad-${o}" data-rad="${o}">${[50, 100, 200].map(v => `<option value="${v}" ${S.radius[o] === v ? 'selected' : ''}>${v} m</option>`).join('')}</select></div>`).join('')}</section>`}`;
+}
+function viewRun(key) {
+  const [o, id] = key.split(':'), r = S.runs[key], c = CL[id];
+  const rows = c.items.map(it => { const a = r.a[it.id] || {}, p = passOf(it, a); let v = '';
+    if (it.type === 'yn') v = a.v === 'y' ? 'Yes' : 'No' + (a.note ? ' – “' + esc(a.note) + '”' : '');
+    if (it.type === 'num') v = `${a.n} ${it.unit}`;
+    if (it.type === 'photo') v = `<div class="thumbs">${a.photos.map(x => `<img src="${x}" alt="">`).join('')}</div>`;
+    if (it.type === 'ba') v = `${a.bt ? 'Before ' + fmt(a.bt) + ' · after ' + fmt(a.at) + ' · took ' + mins(a.bt, a.at) : ''}<div class="sub" style="margin-top:6px">Before</div><div class="thumbs" style="margin-top:4px">${a.b.map(x => `<img src="${x}" alt="Before">`).join('')}</div><div class="sub" style="margin-top:6px">After</div><div class="thumbs" style="margin-top:4px">${a.a.map(x => `<img src="${x}" alt="After">`).join('')}</div>`;
+    return `<div class="item"><div class="item-h"><b>${esc(it.t)}</b><span class="pill ${p ? 'ok' : 'bad'}">${p ? '✓' : '✕'}</span></div><div class="sub">${v}</div></div>`; }).join('');
+  const m = document.createElement('div'); m.className = 'modal';
+  m.innerHTML = `<div class="card" role="dialog" aria-label="${c.title}"><div class="row"><div class="grow"><span class="k">${OUT[o]}</span><h2>${c.title}</h2><span class="sub">${esc(who(r.by).name)} · ${fmt(r.t)}</span></div><button class="btn ghost" style="width:auto;padding:8px 12px" data-close>Close</button></div>${rows}</div>`;
+  m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-close]')) m.remove(); });
+  document.body.appendChild(m);
+}
+
+// ---- draw + events ----
+function draw() {
+  const SHORT = { clean: 'Housekeeping', chef: 'Chef', mgr: 'Store mgr', ops: 'Ops mgr', owner: 'Owner' };
+  $('clock').textContent = 'Clock ' + fmt(now());
+  $('roleSeg').innerHTML = Object.keys(ROLE).map(k => `<button role="tab" class="${S.role === k ? 'on' : ''}" data-role="${k}">${SHORT[k]}</button>`).join('');
+  const app = $('app'), wide = S.role === 'owner' || (S.role === 'ops' && S.signedIn.ops); app.className = wide ? 'wide' : '';
+  app.innerHTML = S.role === 'owner' ? dash('owner') : !S.signedIn[S.role] ? loginScreen() : S.role === 'ops' ? dash('ops') : S.view === 'check' ? checklist() : staffHome();
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.id === 'skip') { S.offset += 2 * 3600000; draw(); toast(`Clock moved to ${fmt(now())}. Problems not fixed in time move up.`); return; }
+  if (t.dataset.role) { S.role = t.dataset.role; S.view = 'home'; S.draft = null; S.attErr = false; S.lvForm = false; S.login = null; draw(); window.scrollTo(0, 0); return; }
+  const a = t.dataset.a;
+  if (a === 'lg-go' || a === 'lg-retry') return loginGo();
+  if (a === 'lg-selfie') return loginSelfie();
+  if (a === 'signout') { S.signedIn[S.role] = false; S.view = 'home'; draw(); return; }
+  if (a === 'lv-new') { S.lvForm = true; draw(); return; }
+  if (a === 'lv-cancel') { S.lvForm = false; draw(); return; }
+  if (a === 'lv-send') { const why = $('lvWhy').value.trim(); if (!why) { toast('Write a reason for the leave.'); $('lvWhy').focus(); return; }
+    const l = { id: Date.now(), by: ME[S.role], date: $('lvDate').value, days: +$('lvDays').value, reason: why, status: 'pending', t: now() };
+    S.leaves.unshift(l); S.lvForm = false; draw(); toast(`Sent to ${approverOf(l).name} for approval.`); return; }
+  if (t.dataset.leave) { const [id, v] = t.dataset.leave.split(':'); const l = S.leaves.find(x => String(x.id) === id); l.status = v; l.dec = { by: ME[S.role], t: now() }; draw(); toast(`Leave ${v} for ${who(l.by).name}.`); return; }
+  if (t.dataset.late) { const [id, v] = t.dataset.late.split(':'); S.att[id].in.late.status = v; draw(); toast(v === 'accepted' ? 'Reason accepted.' : 'Marked as late.'); return; }
+  if (t.dataset.approve) { const r = S.runs[t.dataset.approve]; r.status = 'approved'; r.appr = { by: ME[S.role], t: now() }; draw(); toast('Housekeeping approved.'); return; }
+  if (t.dataset.redo) { const [o, id, item] = t.dataset.redo.split(':'), r = S.runs[o + ':' + id], a = { ...r.a }; delete a[item];
+    const title = CL[id].items.find(i => i.id === item).t; delete S.runs[o + ':' + id];
+    S.drafts[id] = { id, a, back: { item: title, by: ME[S.role], t: now() } }; draw(); toast(`Sent back to ${who(r.by).name}: redo ${title}.`); return; }
+  if (a === 'checkin') return doAttendance('in');
+  if (a === 'checkout') return doAttendance('out');
+  if (a === 'home') { S.view = 'home'; draw(); return; }
+  if (a === 'submit') return submit();
+  if (t.dataset.open) { S.draft = S.drafts[t.dataset.open] ||= { id: t.dataset.open, a: {} }; S.view = 'check'; draw(); window.scrollTo(0, 0); return; }
+  if (t.dataset.yn) { const [id, v] = t.dataset.yn.split(':'); S.draft.a[id] = { ...(S.draft.a[id] || {}), v }; draw(); return; }
+  if (t.dataset.shot) { const [id, k] = t.dataset.shot.split(':'); const it = CL[S.draft.id].items.find(i => i.id === id);
+    photo('back', k === 'b' ? 'Before' : k === 'a' ? 'After' : it.t.split(' ')[0], (img) => { const cur = S.draft.a[id] || {}; (cur[k] = cur[k] || []).push(img);
+      if (k === 'b' && !cur.bt) cur.bt = now(); if (k === 'a') cur.at = now(); S.draft.a[id] = cur; draw(); }); return; }
+  if (t.dataset.rm) { const [id, k, n] = t.dataset.rm.split(':'); S.draft.a[id][k].splice(+n, 1); draw(); return; }
+  if (t.dataset.fix) { const i = S.issues.find(x => String(x.id) === t.dataset.fix);
+    photo('back', 'Fixed', (img) => { i.fixed = { t: now(), by: ME[S.role], photo: img }; draw(); toast('Marked fixed. Everyone above can see the photo.'); }); return; }
+  if (t.dataset.tab) { S.tab = t.dataset.tab; draw(); return; }
+  if (t.dataset.f) { S.filter = t.dataset.f; draw(); return; }
+  if (t.dataset.view) return viewRun(t.dataset.view);
+});
+document.addEventListener('change', (e) => { const o = e.target.dataset.rad; if (o) { S.radius[o] = +e.target.value; toast(`${OUT[o]}: sign-in allowed within ${e.target.value} m`); } });
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.num) {   // update in place so typing a minus sign is not wiped by a redraw
+    const id = t.dataset.num, c = CL[S.draft.id], it = c.items.find(i => i.id === id);
+    S.draft.a[id] = { n: t.value === '' ? '' : +t.value };
+    const p = passOf(it, S.draft.a[id]);
+    $('np-' + id).innerHTML = p === true ? '<span class="pill ok">OK</span>' : p === false ? '<span class="pill bad">Out of range</span>' : '';
+    const done = c.items.filter(i => answered(i, S.draft.a[i.id])).length, b = document.querySelector('[data-a="submit"]');
+    b.disabled = done < c.items.length; b.querySelector('.num').textContent = `${done}/${c.items.length}`;
+  }
+  if (t.dataset.note) { S.draft.a[t.dataset.note].note = t.value; }
+});
+// desktop preview: default to sample photos so the flow can be tried without a camera
+$('optSample').checked = !matchMedia('(pointer: coarse)').matches;
+draw();
+</script>
+
+</body></html>
