@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 460" role="img" aria-label="Three cheerful egg characters: a chef flipping an egg in a pan, a cook with a spatula and a server with a plate">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="48%" r="55%">
+      <stop offset="0" stop-color="#FFF3C4"/>
+      <stop offset="1" stop-color="#FDBD03"/>
+    </radialGradient>
+    <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FBF1D8"/>
+    </linearGradient>
+    <g id="hat">
+      <circle cx="-22" cy="-10" r="20" fill="#fff" stroke="#141414" stroke-width="4"/>
+      <circle cx="22" cy="-10" r="20" fill="#fff" stroke="#141414" stroke-width="4"/>
+      <circle cx="0" cy="-22" r="24" fill="#fff" stroke="#141414" stroke-width="4"/>
+      <path d="M-30 -4 h60 v22 h-60 z" fill="#fff" stroke="#141414" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M-26 -8 q26 -10 52 0" fill="none" stroke="#fff" stroke-width="10"/>
+    </g>
+  </defs>
+
+  <rect width="560" height="460" rx="28" fill="url(#glow)"/>
+  <!-- sun rays -->
+  <g stroke="#FFE38A" stroke-width="18" stroke-linecap="round" opacity=".9">
+    <path d="M280 230 L280 30"/><path d="M280 230 L440 70"/><path d="M280 230 L120 70"/>
+    <path d="M280 230 L530 210"/><path d="M280 230 L30 210"/>
+  </g>
+  <!-- sparkles -->
+  <g fill="#fff" stroke="#141414" stroke-width="3" stroke-linejoin="round">
+    <path d="M70 120 l7 15 15 7 -15 7 -7 15 -7 -15 -15 -7 15 -7z"/>
+    <path d="M500 120 l6 12 12 6 -12 6 -6 12 -6 -12 -12 -6 12 -6z"/>
+    <path d="M200 70 l5 10 10 5 -10 5 -5 10 -5 -10 -10 -5 10 -5z"/>
+  </g>
+  <!-- floor -->
+  <ellipse cx="280" cy="418" rx="245" ry="22" fill="#E3A600" opacity=".55"/>
+
+  <!-- flying egg from pan -->
+  <g transform="translate(350 70) rotate(-14)">
+    <path d="M-38 6 c-6 -22 16 -34 30 -28 c12 -14 40 -8 42 10 c18 4 16 30 -4 32 c-10 14 -40 14 -48 2 c-18 2 -26 -10 -20 -16z" fill="#fff" stroke="#141414" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="0" cy="2" r="13" fill="#FDBD03" stroke="#141414" stroke-width="4"/>
+    <circle cx="-4" cy="-2" r="4" fill="#fff"/>
+  </g>
+  <g fill="none" stroke="#141414" stroke-width="4" stroke-linecap="round">
+    <path d="M338 132 q-6 -14 4 -26"/><path d="M362 138 q4 -14 -2 -24"/>
+  </g>
+
+  <!-- LEFT: cook with spatula -->
+  <g transform="translate(124 300)">
+    <path d="M-30 96 v14 M30 96 v14" stroke="#141414" stroke-width="9" stroke-linecap="round"/>
+    <path d="M0 -78 C44 -78 66 -20 66 26 C66 72 38 100 0 100 C-38 100 -66 72 -66 26 C-66 -20 -44 -78 0 -78Z" fill="url(#shell)" stroke="#141414" stroke-width="5"/>
+    <path d="M-44 40 h88 v28 q-44 22 -88 0z" fill="#FDBD03" stroke="#141414" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="0" cy="54" r="7" fill="#141414"/>
+    <path d="M-24 0 q8 -10 16 0" fill="none" stroke="#141414" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="20" cy="-2" r="6" fill="#141414"/>
+    <path d="M-16 16 q16 18 32 0 z" fill="#141414"/><path d="M-8 22 q8 6 16 0" fill="#F28C8C"/>
+    <ellipse cx="-34" cy="14" rx="9" ry="6" fill="#F7A9A0" opacity=".8"/><ellipse cx="34" cy="14" rx="9" ry="6" fill="#F7A9A0" opacity=".8"/>
+    <use href="#hat" transform="translate(0 -84) scale(.85)"/>
+    <!-- arm + spatula -->
+    <path d="M-62 30 q-24 -6 -30 -34" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round"/>
+    <path d="M-92 -4 l-4 -46" stroke="#8A5A1E" stroke-width="7" stroke-linecap="round"/>
+    <rect x="-112" y="-86" width="30" height="38" rx="6" fill="#4A4A4A" stroke="#141414" stroke-width="4" transform="rotate(-5 -97 -67)"/>
+    <path d="M-104 -78 v22 M-96 -78 v22 M-88 -78 v22" stroke="#9a9a9a" stroke-width="3" transform="rotate(-5 -97 -67)"/>
+  </g>
+
+  <!-- RIGHT: server with plate -->
+  <g transform="translate(436 300)">
+    <path d="M-30 96 v14 M30 96 v14" stroke="#141414" stroke-width="9" stroke-linecap="round"/>
+    <path d="M0 -78 C44 -78 66 -20 66 26 C66 72 38 100 0 100 C-38 100 -66 72 -66 26 C-66 -20 -44 -78 0 -78Z" fill="url(#shell)" stroke="#141414" stroke-width="5"/>
+    <path d="M-44 40 h88 v28 q-44 22 -88 0z" fill="#FDBD03" stroke="#141414" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="0" cy="54" r="7" fill="#141414"/>
+    <path d="M-26 -2 q8 -10 16 0 M10 -2 q8 -10 16 0" fill="none" stroke="#141414" stroke-width="5" stroke-linecap="round"/>
+    <path d="M-16 14 q16 18 32 0 z" fill="#141414"/><path d="M-8 20 q8 6 16 0" fill="#F28C8C"/>
+    <ellipse cx="-34" cy="12" rx="9" ry="6" fill="#F7A9A0" opacity=".8"/><ellipse cx="34" cy="12" rx="9" ry="6" fill="#F7A9A0" opacity=".8"/>
+    <!-- cap instead of chef hat -->
+    <path d="M-40 -64 q40 -40 80 0 z" fill="#141414"/><path d="M30 -64 h34 q4 6 -4 8 h-30z" fill="#141414"/>
+    <!-- arm + plate -->
+    <path d="M62 30 q20 -4 24 -30" fill="none" stroke="#141414" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="80" cy="-8" rx="40" ry="11" fill="#fff" stroke="#141414" stroke-width="4"/>
+    <path d="M58 -14 c0 -14 18 -18 26 -10 c10 -8 26 0 22 10 z" fill="#fff" stroke="#141414" stroke-width="3"/>
+    <circle cx="80" cy="-18" r="8" fill="#FDBD03" stroke="#141414" stroke-width="3"/>
+    <path d="M94 -20 q8 -10 14 -2 q-6 2 -14 2z" fill="#4E8B3A" stroke="#141414" stroke-width="2"/>
+  </g>
+
+  <!-- CENTER: head chef flipping -->
+  <g transform="translate(270 290)">
+    <path d="M-36 116 v16 M36 116 v16" stroke="#141414" stroke-width="10" stroke-linecap="round"/>
+    <path d="M0 -96 C54 -96 80 -24 80 32 C80 88 46 120 0 120 C-46 120 -80 88 -80 32 C-80 -24 -54 -96 0 -96Z" fill="url(#shell)" stroke="#141414" stroke-width="5"/>
+    <path d="M-54 50 h108 v32 q-54 26 -108 0z" fill="#FDBD03" stroke="#141414" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="0" cy="66" r="8" fill="#141414"/>
+    <path d="M-32 -4 q10 -12 20 0 M12 -4 q10 -12 20 0" fill="none" stroke="#141414" stroke-width="6" stroke-linecap="round"/>
+    <path d="M-22 14 q22 30 44 0 z" fill="#141414"/><path d="M-11 24 q11 9 22 0" fill="#F28C8C"/>
+    <ellipse cx="-42" cy="14" rx="11" ry="7" fill="#F7A9A0" opacity=".8"/><ellipse cx="42" cy="14" rx="11" ry="7" fill="#F7A9A0" opacity=".8"/>
+    <use href="#hat" transform="translate(0 -102)"/>
+    <!-- arm + pan -->
+    <path d="M74 20 q30 -14 36 -50" fill="none" stroke="#141414" stroke-width="9" stroke-linecap="round"/>
+    <path d="M110 -30 l-26 -44" stroke="#141414" stroke-width="10" stroke-linecap="round"/>
+    <ellipse cx="66" cy="-100" rx="50" ry="16" fill="#2B2B2B" stroke="#141414" stroke-width="4" transform="rotate(-24 66 -100)"/>
+    <ellipse cx="66" cy="-104" rx="38" ry="9" fill="#444" transform="rotate(-24 66 -104)"/>
+    <!-- other hand on hip -->
+    <path d="M-76 24 q-14 14 -4 30" fill="none" stroke="#141414" stroke-width="9" stroke-linecap="round"/>
+  </g>
+</svg>
