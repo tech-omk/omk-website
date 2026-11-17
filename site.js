@@ -2,6 +2,7 @@
 (function () {
   const here = (location.pathname.split('/').pop() || 'index.html');
   const LINKS = [['index.html', 'Home'], ['story.html', 'Our story'], ['outlets.html', 'Outlets & contact']];
+  const HIRING = true;   // set to false to hide the "We are hiring" tab and top strip
   const FRANCHISE = true;   // set to false when the franchise page is removed
 
   // Online ordering: each Swiggy / Zomato link opens the OMK outlet nearest to the customer
@@ -41,6 +42,7 @@
   });
   const h = document.getElementById('siteHeader');
   if (h) {
+    if (HIRING && here !== 'careers.html') h.insertAdjacentHTML('beforebegin', '<a class="hire-strip" href="careers.html"><span class="hs-tag">We are hiring</span><span class="hs-txt">Join the OMK kitchen family</span><span class="hs-go">Apply now →</span></a>');
     h.className = 'bar';
     h.innerHTML = `<div class="wrap">
       <a href="index.html" aria-label="OMK home" style="display:flex;align-items:center;gap:14px;text-decoration:none">
@@ -48,6 +50,7 @@
       <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false">☰</button>
       <nav class="nav-links" id="navLinks" aria-label="Main">
         ${LINKS.map(([u, t]) => `<a href="${u}" ${u === here ? 'aria-current="page"' : ''}>${t}</a>`).join('')}
+        ${HIRING ? `<a class="hire-nav" href="careers.html" ${here === 'careers.html' ? 'aria-current="page"' : ''}><span class="dot" aria-hidden="true"></span>We are hiring</a>` : ''}
         ${FRANCHISE ? `<a class="btn btn-dark" href="franchise.html" ${here === 'franchise.html' ? 'aria-current="page"' : ''}>Franchise</a>` : ''}
       </nav></div>`;
     const b = document.getElementById('menuBtn'), n = document.getElementById('navLinks');
